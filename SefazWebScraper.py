@@ -2,10 +2,11 @@
 
 import bs4 as bs
 import requests
-
-
+from termcolor import colored
+from tabulate import tabulate
 
 states = []
+states.append(["Autorizador", "Autorização", "Retorno Autorização", "Inutilização", "Consulta Protocolo", "Status Serviço", "Tempo Médio", "Consulta Cadastro", "Recepção Evento"])
 state = []
 situations = []
 
@@ -17,27 +18,36 @@ tables = soup.find_all(class_='tabelaListagemDados')
 
 for table in tables:
     rows = table.find_all('tr', recursive=False)
-    
+
     for content in rows:
-        
-        states.append(state)
         state = []
         contents = content.find_all('td', recursive=False)
-        
+
         for texto in contents:
-            texto = str(texto).lstrip('<td>').rstrip('</td>')
-            texto = str(texto).lstrip('img src="imagens/bola_').rstrip('_P.png"').lstrip('pan>').rstrip('</spa')
-            #if texto == 'S':
-            #    texto = 'SP'
-                
+            texto = str(texto).lstrip('<td>').rstrip('</td>').lstrip('img src="imagens/bola').rstrip('_P.png"').lstrip('pan>').rstrip('</sp')
+
+            if texto == '_amarela':
+                texto = colored('###', 'yellow')
+
+            elif texto == '_verde':
+                texto = colored('###', 'green')
+
+            elif texto == '_vermelha':
+                texto = colored('###', 'red')
+
+            elif texto == '</spa':
+                texto = colored('###', 'white')
+
+            if texto == 'S':
+                texto = 'SP'
+
             if not str(texto):
                 texto = 'Null'
-            
+
             state.append(texto)
-            
 
+        states.append(state)
 
-states.remove([]);states.remove([])
+states.remove([])
+print(tabulate(states, headers='firstrow', tablefmt='grid'))
 
-for state in states:
-    print(state)
